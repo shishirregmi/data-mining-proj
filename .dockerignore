@@ -1,0 +1,10 @@
+# Exclude Git history from the Docker build context.
+.git
+# Exclude Python cache folders from the Docker image.
+__pycache__
+# Exclude local virtual environments from the Docker image.
+.venv
+# Exclude previous output because the container will regenerate it.
+output
+# Exclude locally generated root-level predictions from the image.
+prediction_results_*.csv
