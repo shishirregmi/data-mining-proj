@@ -1,16 +1,8 @@
-# Define the containers used by this project.
 services:
-  # Name the classification service.
   wine-classifier:
-    # Build the image using the Dockerfile in this folder.
     build: .
-    # Give the generated image a readable local name.
     image: wine-classifier:latest
-    # Save the CSV inside the mounted output directory.
     environment:
-      # Tell main.py where to write its prediction table.
       OUTPUT_DIRECTORY: /app/output
-    # Connect the local output folder to the container output folder.
     volumes:
-      # Keep generated results on the host after the container exits.
       - ./output:/app/output
