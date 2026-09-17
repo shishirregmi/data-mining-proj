@@ -1,6 +1,3 @@
-# pandas reads the supplied Excel datasets and writes the CSV results.
 pandas>=2.0,<4.0
-# numpy performs the mathematical operations used by both classifiers.
 numpy>=1.24,<3.0
-# openpyxl lets pandas read modern .xlsx workbooks.
 openpyxl>=3.1,<4.0
