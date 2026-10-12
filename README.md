@@ -2,15 +2,13 @@
 
 ## Docker
 
-```bash
-docker compose up --build
-```
+    docker compose up --build
 
-Generated files are saved in `output/`.
+Generated predictions, the SVMlight model, and the Part 2 comparison are saved in output/.
 
 ## Python
 
-```bash
-python -m pip install -r requirements.txt
-python main.py
-```
+    python -m pip install -r requirements.txt
+    python main.py
+
+SVMlight binaries must be installed and available on PATH for the Python run. Docker fetches and compiles SVMlight during build for research and education use; do not redistribute the image.

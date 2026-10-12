@@ -6,6 +6,8 @@ import os
 import numpy as np
 import pandas as pd
 
+from svm_light import SVM_LIGHT_CITATION, build_part2_comparison, run_svmlight
+
 PROJECT_FOLDER = Path(__file__).resolve().parent
 TRAINING_FILE = PROJECT_FOLDER / "Training dataset.xlsx"
 TESTING_FILE = PROJECT_FOLDER / "Testing dataset.xlsx"
@@ -241,18 +243,27 @@ def main():
     naive_bayes_predictions = naive_bayes_model.predict(test_x)
     knn_predictions = knn_model.predict(test_x)
     decision_tree_predictions = decision_tree_model.predict(test_x)
+    svm_output_directory = OUTPUT_DIRECTORY / f"svmlight_{output_timestamp}"
+    svm_predictions, _ = run_svmlight(
+        train_x, train_y, test_x, test_y, svm_output_directory
+    )
     naive_bayes_accuracy = calculate_accuracy(test_y, naive_bayes_predictions)
     knn_accuracy = calculate_accuracy(test_y, knn_predictions)
     decision_tree_accuracy = calculate_accuracy(test_y, decision_tree_predictions)
+    svm_accuracy = calculate_accuracy(test_y, svm_predictions)
     result_table = pd.DataFrame({
         "Wine": wine_names,
         "Real grade": test_y,
         "Naive Bayes predicted grade": naive_bayes_predictions,
         "KNN predicted grade": knn_predictions,
         "Decision Tree predicted grade": decision_tree_predictions,
+        "SVMlight predicted grade": svm_predictions,
     })
+    comparison_table = build_part2_comparison(svm_accuracy)
+    comparison_file = OUTPUT_DIRECTORY / f"part2_comparison_{output_timestamp}.csv"
     output_file.parent.mkdir(parents=True, exist_ok=True)
     result_table.to_csv(output_file, index=False)
+    comparison_table.to_csv(comparison_file, index=False)
     print(f"Training wines: {len(train_y)} | Testing wines: {len(test_y)}")
     print("KNN validation accuracy by k:", {k: f"{score:.2%}" for k, score in validation_scores.items()})
     print(f"Selected KNN k: {best_k}")
@@ -261,8 +272,16 @@ def main():
     print(f"Naive Bayes: {(naive_bayes_predictions == test_y).sum()}/{len(test_y)} correct = {naive_bayes_accuracy:.2%}")
     print(f"KNN: {(knn_predictions == test_y).sum()}/{len(test_y)} correct = {knn_accuracy:.2%}")
     print(f"Decision Tree: {(decision_tree_predictions == test_y).sum()}/{len(test_y)} correct = {decision_tree_accuracy:.2%}")
-    print(result_table[["Real grade", "Naive Bayes predicted grade", "KNN predicted grade", "Decision Tree predicted grade"]].to_string(index=False))
+    print(f"SVMlight: {(svm_predictions == test_y).sum()}/{len(test_y)} correct = {svm_accuracy:.2%}")
+    print(result_table[["Real grade", "Naive Bayes predicted grade", "KNN predicted grade", "Decision Tree predicted grade", "SVMlight predicted grade"]].to_string(index=False))
+    print("\nSVMlight compared with Part 2 five-fold averages:")
+    print(comparison_table.to_string(index=False))
+    print("Part 2 used five-fold CV on 1,010 wines; SVMlight uses the repository's separate 200/19 train/test split.")
+    print("The Part 2 KNN fold-average table shows 56.73%; its conclusion paragraph says 56.24%.")
+    print(f"SVMlight reference: {SVM_LIGHT_CITATION}")
     print(f"\nSaved predictions to: {output_file}")
+    print(f"Saved Part 2 comparison to: {comparison_file}")
+    print(f"Saved SVMlight inputs, model, and scores to: {svm_output_directory}")
 
 
 if __name__ == "__main__":
